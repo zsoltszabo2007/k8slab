@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webby-nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-webby
+  template:
+    metadata:
+      name: nginx-webby
+      labels:
+        app: nginx-webby
+    spec:
+      containers:
+      - name: webby
+        image: reg.alta3.com/5177-szabo-webby
+        ports:
+        - containerPort: 5177
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        volumeMounts:
+        - name: nginx-proxy-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: my-index-file
+          mountPath: /var/www/index.html
+          subPath: index.html
+        - name: static-demo-data
+          mountPath: /var/www/static/nginx.txt
+          subPath: nginx.txt
+        - name: top-secret-keys
+          mountPath: /etc/nginx/ssl
+          readOnly: true   
+      volumes:
+      - name: nginx-proxy-config
+        configMap:
+          name: nginx-conf
+      - name: my-index-file
+        configMap:
+              name: index-file
+      - name: static-demo-data
+        configMap:
+          name: nginx-txt
+      - name: top-secret-keys
+        secret:
+          secretName: webby-keys  

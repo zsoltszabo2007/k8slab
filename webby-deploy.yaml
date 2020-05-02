@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: webservice
+  labels:
+    app: webby
+spec:
+  selector: 
+    matchLabels:
+      app: webby
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: webby
+    spec:
+      containers:
+      - name: webby
+        image: reg.alta3.com/5177-szabo-webby
+        ports: 
+        - containerPort: 8888
